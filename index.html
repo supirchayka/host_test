@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Пример страницы</title>
+    <style>
+        * {
+            color: rgb(36, 36, 36);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 18px;
+        }
+        p {
+            margin-left: 20px;
+        }
+        select {
+            width: 350px;
+            margin-top: 5px;
+            padding: 4px;
+        }
+        h1 {
+            font-size: 22px;
+        }
+        button {
+            margin-left: 20px;
+            padding: 5px 20px;
+            background: none;
+            border-radius: 4px;
+            transition: 500ms;
+        }
+        select option:nth-child(even) {
+            background-color: rgb(228, 228, 228);
+        }
+        #add {
+            border: 1px solid rgb(0, 87, 0);
+            color: rgb(0, 87, 0);
+        }
+        #add:hover {
+            background: rgb(0, 87, 0);
+            border: 1px solid rgb(0, 87, 0);
+            color: rgb(255, 255, 255);
+        }
+        #clean {
+            border: 1px solid rgb(170, 0, 0);
+            color: rgb(170, 0, 0);
+        }
+        #clean:hover {
+            background: rgb(170, 0, 0);
+            border: 1px solid rgb(170, 0, 0);
+            color: rgb(255, 255, 255);
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    var nowCompany = null;
+    var companies = [ [1, "Lada"], [2, "Audi"], [3, "Toyoya"] ];
+    var companyRoles = [ [10, "Директор"], [20, "Инженер"], [30, "Менеджер"] ];
+    var employers = [
+                        [1, "Сидоров Иван Петрович", 1, 10],
+                        [2, "Клюквина Анастасия Викторовна", 1, 30],
+                        [3, "Yoshimoro Katsumi", 3, 10],
+                        [4, "Albrecht Wallenstein", 2, 20],
+                        [5, "Архипов Федот Ярополкович", 1, 20],
+                        [6, "Синицына Ксения Игоревна", 1, 30],
+                        [7, "Gustaf Grefberg", 2, 10],
+                        [8, "Simidzu Koyama", 3, 20],
+                        [9, "Miura Hirana", 3, 20],
+                        [10, "Кузьмин Егор Владимирович", 1, 30],
+                        [11, "Мазурик Алёна Васильевна", 1, 20],
+                        [12, "Gudrun Ensslin", 2, 30],
+                        [13, "Ernst Rommel", 2, 20]
+                    ];
+    
+    function reloadEmployers() {
+
+        if (nowCompany != null)
+        {
+            $("#employee").prop('disabled', false);
+            $('#employee').empty()
+
+            $.each(employers, function (index, value) {
+
+            var empId = value[0];
+            var empName = value[1];
+            var empComp = value[2];
+            var empRole = value[3];
+
+            if(empComp == nowCompany)
+            {
+                if( $("#role"+ empRole).prop('checked') )
+                {
+                    $('#employee').append($('<option/>', { 
+                        id: "empId" + empId,
+                        value: empRole,
+                        text : empName
+                    }));
+                }
+                
+            }
+
+            });
+        }
+    }
+
+    $(document).ready(function(){
+
+        $.each(companies, function (index, value) {
+            var compId = value[0];
+            var compName = value[1];
+
+            $('#company').append($('<option/>', { 
+                value: compId,
+                text : compName 
+            }));
+
+        });
+
+        $.each(companyRoles, function (index, value) {
+            
+            var roleId = value[0];
+            var roleName = value[1];
+
+            var roleString = "<input id=\"role"+ roleId + "\" value=\"" + roleName + "\" type=\"checkbox\" class=\"role\" checked> " + roleName + " <br>"
+            $("#roles").append(roleString);
+        }); 
+
+        $("#company").change(function() {
+
+            nowCompany = $("#company").val();
+
+            if(nowCompany == null)
+            {
+                $("#employee").prop('disabled', true);
+                $('#employee').empty()
+            }
+            else
+            {
+                reloadEmployers();
+            }
+            
+        });
+
+        $('.role').change(function() {
+            reloadEmployers();
+        });
+
+        $("#add").click(function() {
+            if( $('#employee').val() != null )
+            {
+                var empToAdd = $("#employee option:selected").text();
+                var companyOfEmp = $("#company option:selected").text();
+                
+                var roleOfEmp = $("#employee").val();
+                roleOfEmp = "#role"+ roleOfEmp;
+                roleOfEmp = $(roleOfEmp).val();
+
+                var quote = empToAdd + " - " + roleOfEmp + "(" + companyOfEmp + ")\n";
+                $('#list').append(quote); 
+            }
+        });
+
+        $("#clean").click(function() {
+            $('#list').val('');
+        });
+
+    });
+    
+    </script>
+</head>
+
+<body>
+    <h1>Тестовое задание</h1>
+    <form>
+        <p>
+            <label>Организация</label>
+            <br>
+            <select id="company">
+                <option></option>
+            </select>
+            <br>
+        </p>
+        <p>
+            <label>Сотрудник</label>
+            <br>
+            <select id= "employee" disabled>
+            </select>
+            <br>
+        </p>
+        <p id="roles">
+        </p>
+    </form>
+    <button id="add">Добавить</button>
+    <form>
+        <h2>Список участников</h2>
+        <p>
+            <textarea name="list" id="list" cols="60" rows="10"></textarea>
+        </p>
+    </form>
+    <button id="clean">Очистить</button>
+</body>
+
+</html>
